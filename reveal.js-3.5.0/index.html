@@ -86,7 +86,6 @@
 						<h4>Creating Spies</h4>
 						<pre><code class="hljs" data-trim contenteditable>
 function myFunction(fn) {
-	let returnValue;
 	return function () {
 		return fn.apply(this, arguments);
 	};
@@ -99,15 +98,32 @@ function myFunction(fn) {
 						<h4>Creating Spies</h4>
 						<pre><code class="hljs" data-trim contenteditable>
 it('check if called or not called', () => {
-	var callback = sinon.spy()
-	var proxy = index.myFunction(callback)
+	var spy = sinon.spy()
+	var proxy = index.myFunction(spy)
 
-	assert(callback.notCalled)
+	assert(spy.notCalled)
 
 	proxy()
 
-	assert(callback.called)
+	assert(spy.called)
 })
+	
+						</code></pre>
+					</section>
+
+					<section>
+						<h3>Spies</h3>
+						<h4>Method Signatures</h4>
+						<pre><code class="hljs" data-trim contenteditable>
+// creating a spy as an anonymous function
+var spy = sinon.spy(); // #1 method signature
+
+// returns a new function which wraps the given function
+var spy = sinon.spy(myFunc); // #2 method signature
+
+// creates a spy and replaces the original method with the cspy
+var spy = sinon.spy(object, "method"); // #3 method signature
+// Achtung!! call object.method.restore()
 	
 						</code></pre>
 					</section>
@@ -115,7 +131,75 @@ it('check if called or not called', () => {
 					<section>
 						<h3>Spies</h3>
 						<h4>Properties</h4>
-						<p>A test spy is a function that records arguments, return value, the value of this and exception thrown (if any) for all its calls.</p>
+						<p>spy.withArgs(arg1[, arg2, ...]);</p>
+						<pre><code class="hljs" data-trim contenteditable>
+"should call method once with each argument": function () {
+    var object = { method: function () {} };
+    var spy = sinon.spy(object, "method");
+
+    object.method(42);
+    object.method(1);
+
+    assert(spy.withArgs(42).calledOnce);
+    assert(spy.withArgs(1).calledOnce);
+}
+	
+						</code></pre>
+					</section>
+					<section>
+						
+						<h3>Spies</h3>
+						<h4>Properties</h4>
+						<pre><code class="hljs" data-trim contenteditable style="text-align: center">
+							
+							callCount
+							called
+							notCalled
+							calledOnce
+							calledTwice
+							calledThrice
+							firstCall
+							secondCall
+							thirdCall
+							lastCall
+
+							calledBefore(anotherSpy)
+							calledAfter(anotherSpy)
+							calledImmediatelyBefore(anotherSpy)
+							calledImmediatelyAfter(anotherSpy)
+							calledOn(obj)
+							alwaysCalledOn(obj)
+							calledWith(arg1, arg2, ...)
+							alwaysCalledWith(arg1, arg2, ...)
+							neverCalledWith(arg1, arg2, ...)
+							calledWithNew()
+							
+							threw()
+							threw("TypeError")
+							alwaysThrew()
+							returned(obj)
+							alwaysReturned(obj)
+							
+							reset()
+							restore()
+						</code></pre>
+					</section>
+
+						<section>
+							<h3>Spies</h3>
+							<h4>Spy Calls</h4>
+							var spyCall = spy.getCall(n)
+
+							<pre><code class="hljs" data-trim contenteditable>
+sinon.spy(jQuery, "ajax");
+
+jQuery.ajax("/stuffs");
+
+var spyCall = jQuery.ajax.getCall(0);
+
+assertEquals("/stuffs", spyCall.args[0]);
+							</code></pre>
+						</section>
 					</section>
 				</section>
 				

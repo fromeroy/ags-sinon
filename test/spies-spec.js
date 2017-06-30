@@ -2,6 +2,7 @@ var assert = require('assert')
 var sinon = require('sinon')
 var index = require('../src/index.js')
 var jQuery = require('jquery')
+var spia1, spia2;
 
 describe('Spies', () => {
 	it('calls the original function', () => {
@@ -40,7 +41,73 @@ describe('Spies', () => {
 		assert(callback.calledOn(obj));
 		assert(callback.calledWith(1, 2, 3));
 	});
+
+	// METHOD SIGNATURES
+	describe.only('METHOD SIGNATURES', function () {
+		
+		function myFunction(fn) {
+			return function () {
+				return fn.apply(this, arguments)
+			};
+		}
+		
+		var objeto = {
+			myFunction: function (fn) {
+				return function () {
+					return fn.apply(this.arguments)
+				}
+			}
+
+		}
+
+		afterEach(()=>{
+			// console.log(objeto.myFunction)
+		})
+		
+		it('#1 method signature', function () {
+			var spy = sinon.spy();
+			var proxy = myFunction(spy);
+
+			proxy();
+
+			assert(spy.calledOnce);
+		});
+
+		it('#2 method signature', function () {
+			var spy = sinon.spy(myFunction);
+			var proxy = myFunction(spy);
+
+			proxy();
+
+			assert(spy.calledOnce);
+		});
+
+		it('#3 method signature', function () {
+			var spy = sinon.spy(objeto, 'myFunction');
+			var spy2 = sinon.spy()
+			var proxy = objeto.myFunction(spy2)
+
+			assert(spy.calledOnce)
+			assert(spy2.notCalled)
+
+			proxy()
+
+			assert(spy.calledOnce);
+			assert(spy2.calledOnce);
+
+			proxy()
+
+			assert(spy2.calledTwice)
+			
+			// restore the method
+			objeto.myFunction.restore();
+		});
+	})
 })
+
+
+
+
 describe('Stubs', () => {
 	it("returns the return value from the original function", function () {
 		var callback = sinon.stub().returns(42);

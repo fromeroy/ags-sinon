@@ -23,10 +23,24 @@ function throttle(callback, timeout) {
 }
 
 function myFunction(fn) {
-	let returnValue;
-	return function () {
-		return fn.apply(this, arguments);
-	};
+    return function () {
+        return fn.apply(this, arguments)
+    };
 }
 
-module.exports = {once, throttle, myFunction}
+function myFunctionObject() {
+    return function (obj) {
+        return obj
+    };
+}
+
+var objeto = {
+    myFunction2: function (fn) {
+        return function () {
+            return fn.apply(this.arguments)
+        }
+    }
+
+}
+
+module.exports = { once, throttle, myFunction, objeto, myFunctionObject }
