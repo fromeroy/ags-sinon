@@ -49,8 +49,12 @@
 					<p>
 						<small>Created by <a href="mailto:francisco.romero.altran@axa-groupsolutions.com">F. Javier Romero Yesares</a> / <a href="https://github.com/fromeroy">fromeroy</a></small>
 					</p>
+					
 				</section>
-
+				
+				<section data-background="https://media.giphy.com/media/zQc8STzaOlJ3q/giphy.gif">
+				</section>
+				
 				<section>
 					<section data-markdown>
 						### Install using npm
@@ -204,12 +208,216 @@ assertEquals("/stuffs", spyCall.args[0]);
 				</section>
 				
 				<section>
+					<section>
 					<h3>Stubs</h3>
-				</section>
+					<h4>What are stubs?</h4>
+					<p>Test stubs are functions (spies) with pre-programmed behavior.</p>
+					<p>They support the full test spy API in addition to methods which can be used to alter the stub’s behavior.</p>
+					<p>As spies, stubs can be either anonymous, or wrap existing functions. When wrapping an existing function with a stub, the original function is not called.</p>
+					</section>
+
+					<section>
+					<h3>Stubs</h3>
+					<h4>When to use stubs?</h4>
+					<ol>
+						<li>Control a method’s behavior from a test to force the code down a specific path. Examples include forcing a method to throw an error in order to test error handling.</li>
+						<li>When you want to prevent a specific method from being called directly (possibly because it triggers undesired behavior, such as a XMLHttpRequest or similar).</li>
+					</ol>
+					</section>
+
+					<section>
+					<h3>Stubs</h3>
+					<h4>Creating Stubs</h4>
+					<pre><code class="hljs" data-trim contenteditable>
+						// Creates an anonymous function
+						var stub = sinon.stub();
+
+						// Replaces object.method with a stub function
+						var stub = sinon.stub(object, "method");
+
+						// Replaces object.method with a func, wrapped in a spy.
+						var stub = sinon.stub(object, "method", func);
+
+						// Stubs all the object’s methods.
+						var stub = sinon.stub(obj);
+					</code></pre>
+					</section>
+					
+					<section>
+					<h3>Stubs</h3>
+					<h4>Properties</h4>
+					<p>stub.withArgs(arg1[, arg2, ...]);</p>
+					<pre><code class="hljs" data-trim contenteditable>
+it("test should stub method differently based on arguments", function () {
+    var stub = sinon.stub();
+    stub.withArgs(42).returns(1);
+    stub.withArgs(1).throws("TypeError");
+
+    stub(); // No return value, no exception
+    stub(42); // Returns 1
+    stub(1); // Throws TypeError
+})
+					</code></pre>
+					</section>
+					
+					<section>
+					<h3>Stubs</h3>
+					<h4>Properties</h4>
+					<p>stub.onCall(n);</p>
+					<pre><code class="hljs" data-trim contenteditable>
+it("test should stub method differently on consecutive calls", function () {
+    var stub = sinon.stub();
+    stub.onCall(0).returns(1);
+    stub.onCall(1).returns(2);
+    stub.returns(3);
+
+    stub(); // Returns 1
+    stub(); // Returns 2
+    stub(); // All following calls return 3
+})
+					</code></pre>
+					<p>onFirstCall, onSecondCall, onThirdCall</p>
+					</section>
 				
-				<section>
+					<section>
+					<h3>Stubs</h3>
+					<h4>Properties</h4>
+					<p>Resets both behaviour and history of the stub.</p>
+					<pre><code class="hljs" data-trim contenteditable>stub.reset();</code></pre>
+					<p>Resets history of the stub.</p>
+					<pre><code class="hljs" data-trim contenteditable>stub.resetHistory();</code></pre>
+					</section>
+
+					<section>
+					<h3>Stubs</h3>
+					<h4>Properties</h4>
+					<p>callsFake(fakeFunction);</p>
+					<pre><code class="hljs" data-trim contenteditable>
+var myObj = {};
+myObj.prop = function propFn() {
+    return 'foo';
+};
+
+sinon.stub(myObj, 'prop').callsFake(function fakeFn() {
+    return 'bar';
+});
+
+myObj.prop(); // 'bar'	
+					</code></pre>
+					</section>
+
+					<section>
+					<h3>Stubs</h3>
+					<h4>Properties</h4>
+					<pre><code class="hljs" data-trim contenteditable>sinon.addBehavior(name, fn);</code></pre>
+					Add a custom behavior. The name will be available as a function on stubs
+					<pre><code class="hljs" data-trim contenteditable>
+const sinon = require('sinon');
+
+sinon.addBehavior('returnsNum', (fake, n) => fake.returns(n));
+
+var stub = sinon.stub().returnsNum(42);
+
+assert.equals(stub(), 42);
+					</code></pre>
+					</section>
+					
+					<section>
+					<h3>Stubs</h3>
+					<h4>Properties</h4>
+					<pre><code class="hljs" data-trim contenteditable>stub.get(getterFn)</code></pre>
+					Replaces a new getter for this stub.
+					<pre><code class="hljs" data-trim contenteditable>
+var myObj = {
+    prop: 'foo'
+};
+
+sinon.stub(myObj, 'prop').get(function getterFn() {
+    return 'bar';
+});
+
+myObj.prop; // 'bar'
+					</code></pre>
+					</section>
+					<section>
+					<h3>Stubs</h3>
+					<h4>Properties</h4>
+					<pre><code class="hljs" data-trim contenteditable>stub.set(setterFn)</code></pre>
+					Defines a new setter for this stub.
+					<pre><code class="hljs" data-trim contenteditable>
+var myObj = {
+    example: 'oldValue',
+    prop: 'foo'
+};
+
+sinon.stub(myObj, 'prop').set(function setterFn(val) {
+    myObj.example = val;
+});
+
+myObj.prop = 'baz';
+
+myObj.example; // 'baz'
+					</code></pre>
+					</section>
+					<section>
+					<h3>Stubs</h3>
+					<h4>Properties</h4>
+					<pre><code class="hljs" data-trim contenteditable>stub.value(newVal)</code></pre>
+					Restores values for this stub.
+					<pre><code class="hljs" data-trim contenteditable>
+var myObj = {
+    example: 'oldValue',
+};
+
+var stub = sinon.stub(myObj, 'example').value('newValue');
+stub.restore()
+
+myObj.example; // 'oldValue'
+					</code></pre>
+					</section>
+					<section>
+					<h3>Stubs</h3>
+					<h4>Properties</h4>
+					<pre><code class="hljs" data-trim contenteditable>stub.restore()</code></pre>
+					Defines a new value for this stub.
+					<pre><code class="hljs" data-trim contenteditable>
+var myObj = {
+    example: 'oldValue',
+};
+
+sinon.stub(myObj, 'example').value('newValue');
+
+myObj.example; // 'newValue'
+					</code></pre>
+					</section>
+
+					<section>
+					<h3>Stubs</h3>
+					<h4>Properties</h4>
+					Some properties
+					<pre><code class="hljs" data-trim contenteditable>
+stub.returns(obj);
+stub.returnsArg(index);
+stub.returnsThis();
+stub.resolves(value);
+stub.rejects();
+stub.rejects(value);
+stub.throws();
+					</code></pre>
+					...
+					</section>
+
+				</section> <!-- end stubs -->
+				
+				<section> <!-- start mocks --> 
+					<section>
 					<h3>Mocks</h3>
-				</section>
+					<h4>What are mocks?</h4>
+					<p>Mocks are fake methods (like spies) with pre-programmed behavior (like stubs) as well as pre-programmed expectations.</p>
+					</section>
+
+					
+				</section><!-- end mocks -->
 				
 				<section>
 					<h3>Fake timers</h3>
