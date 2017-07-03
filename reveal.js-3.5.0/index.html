@@ -49,12 +49,12 @@
 					<p>
 						<small>Created by <a href="mailto:francisco.romero.altran@axa-groupsolutions.com">F. Javier Romero Yesares</a> / <a href="https://github.com/fromeroy">fromeroy</a></small>
 					</p>
-					
+
 				</section>
-				
+
 				<section data-background="https://media.giphy.com/media/zQc8STzaOlJ3q/giphy.gif">
 				</section>
-				
+
 				<section>
 					<section data-markdown>
 						### Install using npm
@@ -62,20 +62,20 @@
 						```
 						npm install sinon
 						```
-					
+
 					</section>
 				</section>
 
 				<section>
 					<h3>Main features</h3>
-					
+
 					<p class="fragment">Spies</p>
 					<p class="fragment">Stubs</p>
 					<p class="fragment">Mocks</p>
 					<p class="fragment">Fake timers</p>
 					<p class="fragment">Fake XHR and servers</p>
 					<p class="fragment">Sandboxes</p>
-					
+
 				</section>
 
 				<section>
@@ -84,7 +84,13 @@
 					<h4>What is a test spy?</h4>
 					<p>A test spy is a function that records arguments, return value, the value of this and exception thrown (if any) for all its calls.</p>
 					</section>
-					
+
+					<section>
+					<h3>Spies</h3>
+					<h4>When to use a spy?</h4>
+					<p>A spy is a good choice whenever the goal of a test is to verify something happened</p>
+					</section>
+
 					<section>
 						<h3>Spies</h3>
 						<h4>Creating Spies</h4>
@@ -96,7 +102,7 @@ function myFunction(fn) {
 }
 						</code></pre>
 					</section>
-					
+
 					<section>
 						<h3>Spies</h3>
 						<h4>Creating Spies</h4>
@@ -111,7 +117,7 @@ it('check if called or not called', () => {
 
 	assert(spy.called)
 })
-	
+
 						</code></pre>
 					</section>
 
@@ -128,10 +134,10 @@ var spy = sinon.spy(myFunc); // #2 method signature
 // creates a spy and replaces the original method with the cspy
 var spy = sinon.spy(object, "method"); // #3 method signature
 // Achtung!! call object.method.restore()
-	
+
 						</code></pre>
 					</section>
-					
+
 					<section>
 						<h3>Spies</h3>
 						<h4>Properties</h4>
@@ -147,15 +153,15 @@ var spy = sinon.spy(object, "method"); // #3 method signature
     assert(spy.withArgs(42).calledOnce);
     assert(spy.withArgs(1).calledOnce);
 }
-	
+
 						</code></pre>
 					</section>
 					<section>
-						
+
 						<h3>Spies</h3>
 						<h4>Properties</h4>
 						<pre><code class="hljs" data-trim contenteditable style="text-align: center">
-							
+
 							callCount
 							called
 							notCalled
@@ -177,13 +183,13 @@ var spy = sinon.spy(object, "method"); // #3 method signature
 							alwaysCalledWith(arg1, arg2, ...)
 							neverCalledWith(arg1, arg2, ...)
 							calledWithNew()
-							
+
 							threw()
 							threw("TypeError")
 							alwaysThrew()
 							returned(obj)
 							alwaysReturned(obj)
-							
+
 							reset()
 							restore()
 						</code></pre>
@@ -206,7 +212,7 @@ assertEquals("/stuffs", spyCall.args[0]);
 						</section>
 					</section>
 				</section>
-				
+
 				<section>
 					<section>
 					<h3>Stubs</h3>
@@ -242,7 +248,7 @@ assertEquals("/stuffs", spyCall.args[0]);
 						var stub = sinon.stub(obj);
 					</code></pre>
 					</section>
-					
+
 					<section>
 					<h3>Stubs</h3>
 					<h4>Properties</h4>
@@ -259,7 +265,7 @@ it("test should stub method differently based on arguments", function () {
 })
 					</code></pre>
 					</section>
-					
+
 					<section>
 					<h3>Stubs</h3>
 					<h4>Properties</h4>
@@ -278,7 +284,7 @@ it("test should stub method differently on consecutive calls", function () {
 					</code></pre>
 					<p>onFirstCall, onSecondCall, onThirdCall</p>
 					</section>
-				
+
 					<section>
 					<h3>Stubs</h3>
 					<h4>Properties</h4>
@@ -302,7 +308,7 @@ sinon.stub(myObj, 'prop').callsFake(function fakeFn() {
     return 'bar';
 });
 
-myObj.prop(); // 'bar'	
+myObj.prop(); // 'bar'
 					</code></pre>
 					</section>
 
@@ -321,7 +327,7 @@ var stub = sinon.stub().returnsNum(42);
 assert.equals(stub(), 42);
 					</code></pre>
 					</section>
-					
+
 					<section>
 					<h3>Stubs</h3>
 					<h4>Properties</h4>
@@ -408,25 +414,216 @@ stub.throws();
 					</section>
 
 				</section> <!-- end stubs -->
-				
-				<section> <!-- start mocks --> 
+
+				<section> <!-- start mocks -->
 					<section>
 					<h3>Mocks</h3>
 					<h4>What are mocks?</h4>
 					<p>Mocks are fake methods (like spies) with pre-programmed behavior (like stubs) as well as pre-programmed expectations.</p>
 					</section>
 
-					
+          <section>
+					<h3>Mocks</h3>
+					<h4>When to use mocks?</h4>
+					<p>Mocks should be used primarily when you would use a stub, but need to verify multiple more specific behaviors on it.</p>
+					</section>
+
+          <section>
+					<h3>Mocks</h3>
+					<h4>Example</h4>
+					<pre><code class="hljs" data-trim contenteditable>
+it('should pass object with correct values to save only once', function() {
+  var info = { name: 'test' };
+  var expectedUser = {
+    name: info.name,
+    nameLowercase: info.name.toLowerCase()
+  };
+  var database = sinon.mock(Database);
+  database.expects('save').once().withArgs(expectedUser);
+
+  setupNewUser(info, function() { });
+
+  database.verify();
+  database.restore();
+});
+            </code></pre>
+					</section>
+
+					<section>
+					<h3>Mocks</h3>
+					<h4>Creating Mocks</h4>
+					<pre><code class="hljs" data-trim contenteditable>
+// Creates a mock for the provided object.
+// Does not change the object, but returns a mock object to set expectations on the object’s methods.
+var mock = sinon.mock(obj);
+
+// Overrides obj.method with a mock function and returns it.
+var expectation = mock.expects("method");
+
+// Restores all mocked methods.
+mock.restore();
+
+// Verifies all expectations on the mock.
+// If any expectation is not satisfied, an exception is thrown.
+// Also restores the mocked methods.
+mock.verify();
+					</code></pre>
+					</section>
+
+          <section>
+					<h3>Mocks</h3>
+					<h4>Expectations</h4>
+					<pre><code class="hljs" data-trim contenteditable>
+sinon.mock(jQuery).expects("ajax").atLeast(2).atMost(5);
+jQuery.ajax.verify();
+					</code></pre>
+					</section>
+          <section>
+
+					<h3>Mocks</h3>
+					<h4>Expectations</h4>
+					<pre><code class="hljs" data-trim contenteditable>
+expectation.atLeast(number);
+expectation.atMost(number);
+expectation.never();
+expectation.once();
+expectation.twice();
+expectation.thrice();
+expectation.exactly(number);
+expectation.withArgs(arg1, arg2, ...);
+expectation.withExactArgs(arg1, arg2, ...);
+expectation.on(obj);
+expectation.verify();
+
+					</code></pre>
+					</section>
+
 				</section><!-- end mocks -->
-				
-				<section>
+
+        <section data-background="https://media.giphy.com/media/aZ3LDBs1ExsE8/giphy.gif"><!-- WTF ?!¿!? -->
+        </section>
+
+        <section>
+          <section>
+            <p>Spies can check how many times a function was called</p>
+            <pre><code class="hljs" data-trim contenteditable>
+  it('should call save once', function() {
+    var save = sinon.spy(Database, 'save');
+
+    setupNewUser({ name: 'test' }, function() { });
+
+    save.restore();
+    sinon.assert.calledOnce(save);
+  });
+            </code></pre>
+            </section>
+
+            <section>
+            <p>Spy can be check what arguments were passed to a function</p>
+            <pre><code class="hljs" data-trim contenteditable>
+  it('should pass object with correct values to save', function() {
+    var save = sinon.spy(Database, 'save');
+    var info = { name: 'test' };
+    var expectedUser = {
+      name: info.name,
+      nameLowercase: info.name.toLowerCase()
+    };
+
+    setupNewUser(info, function() { });
+
+    save.restore();
+    sinon.assert.calledWith(save, expectedUser);
+  });
+            </code></pre>
+            </section>
+
+
+              <section>
+              <p>Stubs can be used to replace problematic code</p>
+              <pre><code class="hljs" data-trim contenteditable>
+  it('should pass object with correct values to save', function() {
+    var save = sinon.stub(Database, 'save');
+    var info = { name: 'test' };
+    var expectedUser = {
+      name: info.name,
+      nameLowercase: info.name.toLowerCase()
+    };
+
+    setupNewUser(info, function() { });
+
+    save.restore();
+    sinon.assert.calledWith(save, expectedUser);
+  });
+              </code></pre>
+              </section>
+
+
+              <section>
+              <p>Stubs can also be used to trigger different code paths</p>
+              <pre><code class="hljs" data-trim contenteditable>
+  it('should pass the error into the callback if save fails', function() {
+    var expectedError = new Error('oops');
+    var save = sinon.stub(Database, 'save');
+    save.throws(expectedError);
+    var callback = sinon.spy();
+
+    setupNewUser({ name: 'foo' }, callback);
+
+    save.restore();
+    sinon.assert.calledWith(callback, expectedError);
+  });
+              </code></pre>
+              </section>
+
+              <section>
+              <p>Thirdly, stubs can be used to simplify testing asynchronous code</p>
+              <pre><code class="hljs" data-trim contenteditable>
+  it('should pass the database result into the callback', function() {
+    var expectedResult = { success: true };
+    var save = sinon.stub(Database, 'save');
+    save.yields(null, expectedResult);
+    var callback = sinon.spy();
+
+    setupNewUser({ name: 'foo' }, callback);
+
+    save.restore();
+    sinon.assert.calledWith(callback, null, expectedResult);
+  });
+              </code></pre>
+              </section>
+          </section>
+        </section>
+
+
+        <section><!-- start fake timers -->
 					<h3>Fake timers</h3>
-				</section>
-				
+          <pre><code class="hljs" data-trim contenteditable>
+describe('Faking time', () => {
+  var clock;
+
+  before(function () { clock = sinon.useFakeTimers(); });
+  after(function () { clock.restore(); });
+
+  it('calls callback after 5000ms', function () {
+    var callback = sinon.spy();
+    var throttled = index.throttle(callback, 5000);
+
+    throttled();
+
+    clock.tick(4999);
+    assert(callback.notCalled); // true
+
+    clock.tick(1);
+    assert(callback.calledOnce); // true
+  })
+})
+        </code></pre>
+				</section><!-- end fake timers -->
+
 				<section>
 					<h3>Fake XHR and servers</h3>
 				</section>
-				
+
 				<section>
 					<h3>Sandboxes</h3>
 				</section>

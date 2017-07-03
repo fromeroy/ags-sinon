@@ -43,14 +43,14 @@ describe('Spies', () => {
 	});
 
 	// METHOD SIGNATURES
-	describe.only('METHOD SIGNATURES', function () {
-		
+	describe('METHOD SIGNATURES', function () {
+
 		function myFunction(fn) {
 			return function () {
 				return fn.apply(this, arguments)
 			};
 		}
-		
+
 		var objeto = {
 			myFunction: function (fn) {
 				return function () {
@@ -63,7 +63,7 @@ describe('Spies', () => {
 		afterEach(()=>{
 			// console.log(objeto.myFunction)
 		})
-		
+
 		it('#1 method signature', function () {
 			var spy = sinon.spy();
 			var proxy = myFunction(spy);
@@ -98,7 +98,7 @@ describe('Spies', () => {
 			proxy()
 
 			assert(spy2.calledTwice)
-			
+
 			// restore the method
 			objeto.myFunction.restore();
 		});
@@ -137,7 +137,7 @@ xdescribe('Fake server', () => {
 	});
 
 })
-describe('Faking time', () => {
+describe.only('Faking time', () => {
 	var clock;
 
 	before(function () { clock = sinon.useFakeTimers(); });
